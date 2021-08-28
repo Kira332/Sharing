@@ -1,0 +1,49 @@
+spring:
+  data:
+#    elasticsearch:
+#      cluster-name: elasticsearch
+#      cluster-nodes: 127.0.0.1:9300
+#      repositories:
+#        enabled: true
+  datasource:
+    username: Kira
+    password: xxxxx
+    url: jdbc:mysql://localhost:3306/bluebook?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database: mysql
+    show-sql: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: update
+
+  cache:
+    type: redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 10
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+
+bluebook:
+
+  shiro-redis:
+    host: 127.0.0.1
+    port: 6379
+
+file-save-path: D:/images/
+
+aliyun:
+  oss:
+    file:
+      bucketname: "xxxx"
+      keysecret: "xxxx"
+      keyid: "xxxxx"
+      endpoint: "oss-cn-beijing.aliyuncs.com"
