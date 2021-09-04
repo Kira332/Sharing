@@ -135,4 +135,13 @@ public class CommentController {
         commentService.updOneNotComm(id);
         return ResultFactory.buildSuccessResult();
     }
+
+
+    //收到的评论
+    @GetMapping("getComment")
+    public Result getComment(String username){
+        List<Comment> commentList=commentService.findComments(username);
+        return ResultFactory.buildSuccessResult(null,commentList);
+    }
+
 }

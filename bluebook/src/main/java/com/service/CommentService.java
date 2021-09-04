@@ -1,13 +1,7 @@
 package com.service;
 
-import com.Dao.CommentDao;
-import com.Dao.CommentLikeDao;
-import com.Dao.RepCommentDao;
-import com.Dao.UserDao;
-import com.pojo.Comment;
-import com.pojo.CommentLikes;
-import com.pojo.Like;
-import com.pojo.ReportComment;
+import com.Dao.*;
+import com.pojo.*;
 import com.util.Constant;
 import com.util.RedisOperator;
 import com.util.TimeUtil;
@@ -16,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -33,6 +29,9 @@ public class CommentService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private BlogDao blogDao;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void insCommLikes(CommentLikes commentLikes) {
@@ -155,5 +154,20 @@ public class CommentService {
         list = getAllComment(blogId);
         redisOperator.incr(Constant.BLOG_REPORT_COUNT, 1);
         return list;
+    }
+
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public List<Comment> findComments(String username){
+        List<Comment> comments=commentDao.findAllByUsername(username);
+        List<Long> blogIdList=comments.stream().map(Comment::getBlogId).collect(Collectors.toList());
+        for (int i=0;i<blogIdList.size();i++){
+            long blogId=blogIdList.get(i);
+            Blog commentBlog=blogDao.findById(blogId);
+            Comment comment=comments.get(i);
+            comment.setBlogTitle(commentBlog.getTitle());
+            comments.set(i,comment);
+        }
+        return comments;
     }
 }

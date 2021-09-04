@@ -33,4 +33,13 @@ public class Like implements Serializable {
 
     @Column
     private int isRead;
+
+    @Transient
+    private String blogTitle;
+
+    @Transient
+    private String blogPicture;
+
+    @Transient
+    private String userPicture;
 }

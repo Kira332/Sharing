@@ -24,9 +24,12 @@ public class UserService {
     @Autowired
     CommentDao commentDao;
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public User findUserMess(String username){
         return userDao.findByUsername(username);
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
     public User changeUserMess(User giveUser){
         User user=userDao.findByUsername(giveUser.getUsername());
         giveUser.setPassword(user.getPassword());
@@ -49,10 +52,6 @@ public class UserService {
         return collectors;
     }
 
-    public List<Comment> findComments(String username){
-        List<Comment> comments=commentDao.findAllByUsername(username);
-        return comments;
-    }
 
     public void clearComment(String username) {
         List<Comment> commentList = commentDao.findAllByUsernameAndAndIsRead(username,0);
@@ -76,8 +75,9 @@ public class UserService {
         userDao.updUserPwd(phone, String.valueOf(o));
     }
 
-
     public User findUserByPhone(String phone){
         return userDao.findByPhone(phone);
     }
+
+
 }

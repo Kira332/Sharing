@@ -2,6 +2,7 @@ package com.controller;
 
 import com.pojo.Blog;
 import com.pojo.Like;
+import com.pojo.User;
 import com.result.Result;
 import com.result.ResultFactory;
 import com.service.LikeService;
@@ -30,6 +31,13 @@ public class LikeController {
     public Result getUserLikes(String username){
         List<Blog> likes = likeService.findLikes(username);
         return ResultFactory.buildSuccessResult(null,likes);
+    }
+
+    //我收到的点赞列表
+    @GetMapping("getLikes")
+    public Result getLikes(String username){
+        List<Like> likeList=likeService.findLikeList(username);
+        return ResultFactory.buildSuccessResult(null,likeList);
     }
 
 }

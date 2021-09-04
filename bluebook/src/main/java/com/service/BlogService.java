@@ -26,6 +26,7 @@ import java.util.List;
 public class BlogService {
     @Autowired
     BlogDao blogDao;
+
     @Autowired
     private RedisService redisService;
 
@@ -39,8 +40,15 @@ public class BlogService {
     private UserDao userDao;
 
     @Autowired
+    private LikeService likeService;
+
+    @Autowired
+    private CollectionService collectionService;
+
+    @Autowired
     private AsyncService asyncService;
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<Blog> findAllBlog(int page,int pageSize){
         Pageable pageable= PageRequest.of(page, pageSize);
         Page<Blog> blogPage=blogDao.findBlog(pageable);
@@ -48,6 +56,7 @@ public class BlogService {
         return blogList;
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<Blog> findAllBlogByType(int page,int pageSize,String type){
         Pageable pageable= PageRequest.of(page, pageSize);
         Page<Blog> blogPage=blogDao.findBlogsByType(pageable,type);
@@ -64,21 +73,26 @@ public class BlogService {
         }else return pageNum+1;
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<Blog> findAllByUsername(String username){
         List<Blog> blogList=blogDao.findAllByUsername(username);
         return blogList;
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<Blog> findAllDraftByUsername(String username){
         List<Blog> blogList=blogDao.findAllByUsernameAndDraft(username,1);
         return blogList;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public Blog save(Blog blog){
+        TimeUtil timeUtil = new TimeUtil();
         String userPicture=userDao.findByUsername(blog.getUsername()).getPictureUrl();
         if (!userPicture.equals(null)){
             blog.setUserPicture(userPicture);
         }
+        blog.setCreatTime(timeUtil.getParseDateForSix());
         blogDao.save(blog);
         return blog;
     }
@@ -130,46 +144,6 @@ public class BlogService {
         return blogMessage;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public Boolean updBlogByBlogId(Blog blogMessageVO) {
-//        EsBlogMessage esBlogMessage = null;
-        TimeUtil timeUtil = new TimeUtil();
-        blogMessageVO.setCreatTime(timeUtil.getFormatDateForThree());
-//        blogMessageVO.setTagValue(StringAndArray.stringToArray(blogMessageVO.getLabelValues()));
-//        blogMessageVO.setArticleUrl("/article/" + blogMessageVO.getId());
-//        int i = blogDao.updateById(blogMessageVO);
-//        esBlogMessage = esService.findById(blogMessageVO.getId());
-//        esService.removeEsBlog(blogMessageVO.getId());
-//        esBlogMessage.update(blogMessageVO);
-//        esService.saveBlog(esBlogMessage);
-        redisOperator.lremove(Constant.PAGE_BLOG, 0, redisOperator.hget(Constant.BLOG_DETAIL, String.valueOf(blogMessageVO.getId())));
-        redisOperator.lpush(Constant.PAGE_BLOG, blogMessageVO);
-        redisOperator.hdel(Constant.BLOG_DETAIL, String.valueOf(blogMessageVO.getId()));
-        redisOperator.hset(Constant.BLOG_DETAIL, String.valueOf(blogMessageVO.getId()), blogMessageVO);
-        return true;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void publishBlog(Blog blogMessage) {
-        long id = 0L;
-        Blog blog = null;
-//        EsBlogMessage esBlogMessage = null;
-        if (blogMessage.getId() == 0) {
-            id = new TimeUtil().getLongTime();
-            blogMessage.setId(id);
-            blogMessage.setLikes(0);
-            blogMessage.setView(0L);
-            TimeUtil timeUtil = new TimeUtil();
-            blogMessage.setCreatTime(timeUtil.getFormatDateForThree());
-//            blogMessage.setTagValue(StringAndArray.stringToArray(blogMessage.getLabelValues()));
-//            blogMessage.setArticleUrl("/article/" + blogMessage.getId());
-            blogDao.save(blogMessage);
-            blog = blogDao.findById(id);
-//            esBlogMessage = new EsBlogMessage(blog);
-        }
-//        esService.saveBlog(esBlogMessage);
-        redisService.SaveEditBlog(blog);
-    }
 
     public void minusLike(long blogId){
         Blog blog=blogDao.findById(blogId);
@@ -182,6 +156,7 @@ public class BlogService {
         blogDao.save(blog);
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<Blog> queryList(String query, Integer pagenum, Integer pageSize) {
         Specification<Blog> specification = new Specification<Blog>() {
             @Override
@@ -197,6 +172,16 @@ public class BlogService {
         return blogList;
     }
 
+    public int deleteBlog(long blogId){
+        if (blogDao.existsById(blogId)){
+            blogDao.deleteById(blogId);
+            likeService.deleteList(blogId);
+            collectionService.deleteList(blogId);
+            return 1;
+        }else return 0;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
     public int findAllBlogsSearchPage(String query,int pageSize){
         Specification<Blog> specification = new Specification<Blog>() {
             @Override

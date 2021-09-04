@@ -25,7 +25,6 @@ public class Comment implements Serializable {
     private long id;
 
     @Column
-    @NotNull(message = "被评论者用户名不能为空")
     private String username;
 
     @Column
@@ -52,4 +51,7 @@ public class Comment implements Serializable {
     @Column
     @URL
     private String userPicture;
+
+    @Transient
+    private String blogTitle;
 }

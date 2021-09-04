@@ -23,9 +23,6 @@ public class OssController {
     //上传图片的方法
     @PostMapping("/oss/uploadAvator")
     public Result uploadOssFile(MultipartFile file) {
-        if (file.getSize() > 50 * 1024 * 1024) {
-            return ResultFactory.buildFailResult("文件大小不得超过50M");
-        }
         InputStream inputStream = null;
         try {
             Thumbnails.of(file.getInputStream()).size(500, 600);

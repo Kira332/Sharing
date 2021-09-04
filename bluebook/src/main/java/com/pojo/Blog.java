@@ -59,4 +59,10 @@ public class Blog implements Serializable {
     @Column
     @URL
     private String userPicture;
+
+    @Transient
+    //用compress做压缩的测试
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] comContent;
 }

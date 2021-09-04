@@ -65,4 +65,8 @@ public class User implements Serializable {
     @Transient
     private Set<Role> roles;
 
+    //判断是否互关(0是没有，1是有
+    @Transient
+    private int mutualInterest;
+
 }

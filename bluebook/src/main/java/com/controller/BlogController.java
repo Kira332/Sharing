@@ -127,4 +127,14 @@ public class BlogController {
         int blogPage=blogService.findAllBlogsSearchPage(query, pageSize);
         return ResultFactory.buildSuccessResult("",blogPage);
     }
+
+    //删除博客
+    @GetMapping("/deleteBlog")
+    public Result deleteBlog(long blogId){
+        int i=blogService.deleteBlog(blogId);
+        if (i>0){
+            return ResultFactory.buildSuccessResult("删除成功", "");
+        }else return ResultFactory.buildFailResult("不存在该博客");
+    }
+
 }

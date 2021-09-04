@@ -6,8 +6,11 @@ import com.pojo.Blog;
 import com.pojo.Focus;
 import com.pojo.Like;
 import com.pojo.User;
+import net.sf.saxon.trans.SymbolicName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,7 @@ public class FocusService {
     @Autowired
     FocusDao focusDao;
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public void getUserFocus(String username,String fans){
         Focus focus=new Focus();
         focus.setFansName(fans);
@@ -29,11 +33,13 @@ public class FocusService {
         focusDao.save(focus);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteUserFocus(String username,String fans){
-        Focus focus=new Focus();
-        focus=focusDao.findByFansNameAndIdolName(fans, username);
+        Focus focus=focusDao.findByFansNameAndIdolName(fans, username);
         focusDao.delete(focus);
     }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<User> getFocusListByUsername(String username){
         List<Focus> focusList=focusDao.findAllByFansName(username);
         List<String> idolNameList=focusList.stream().map(Focus::getIdolName).collect(Collectors.toList());
@@ -46,6 +52,7 @@ public class FocusService {
         return idolList;
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<User> getFansListByUsername(String username){
         List<Focus> focusList=focusDao.findAllByIdolName(username);
         List<String> fansNameList=focusList.stream().map(Focus::getFansName).collect(Collectors.toList());
@@ -53,8 +60,16 @@ public class FocusService {
         for (int i=0;i<fansNameList.size();i++){
             String fansName=fansNameList.get(i);
             User user=userDao.findByUsername(fansName);
+            if(focusDao.existsByIdolNameAndFansName(fansName, username)){
+                user.setMutualInterest(1);
+            }else user.setMutualInterest(0);
             fansList.add(user);
         }
         return fansList;
     }
+
+    public Boolean getIsFocus(String username,String fans){
+        return focusDao.existsByIdolNameAndFansName(username,fans);
+    }
+
 }

@@ -33,6 +33,8 @@ public class RegisterController {
         return ResultFactory.buildSuccessResult();
     }
 
+
+
     //手机号检测
     @PostMapping("phoneCheck")
     public Result phoneCheck(String phone){

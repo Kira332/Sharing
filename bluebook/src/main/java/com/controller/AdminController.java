@@ -11,6 +11,7 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Blob;
 import java.util.List;
 
 @RestController
@@ -80,6 +81,8 @@ public class AdminController {
     public Result delBlog(@RequestParam(value = "id") Long id){
         Subject subject = SecurityUtils.getSubject();
         if(subject.hasRole("admin")){
+            String a="kjdds";
+
             adminService.deleteBlog(id);
             return ResultFactory.buildSuccessResult();
         }else{

@@ -1,6 +1,7 @@
 package com.config;
 
 import com.filter.CORSAuthenticationFilter;
+import com.filter.XssFilter;
 import com.realm.AuthRealm;
 import com.realm.CustomSessionIdGenerator;
 import com.realm.CustomSessionManager;
@@ -106,8 +107,6 @@ public class ShiroConfig {
         return redisSessionDAO;
     }
 
-
-
     @Bean
     public ShiroFilterFactoryBean shiroFilter(org.apache.shiro.mgt.SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
@@ -131,6 +130,7 @@ public class ShiroConfig {
 
         Map<String, Filter> customFilterMap = new LinkedHashMap<>();
         customFilterMap.put("corsAuthenticationFilter", new CORSAuthenticationFilter());
+        customFilterMap.put("XssFilter", new XssFilter());
         shiroFilter.setFilters(customFilterMap);
 
         return shiroFilter;

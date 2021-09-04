@@ -13,4 +13,5 @@ public interface FocusDao extends JpaRepository<Focus,Long> {
     List<Focus> findAllByFansName(String fansName);
     List<Focus> findAllByIdolName(String idolName);
     Focus findByFansNameAndIdolName(String fansName,String idolName);
+    boolean existsByIdolNameAndFansName(String idolName,String fansName);
 }

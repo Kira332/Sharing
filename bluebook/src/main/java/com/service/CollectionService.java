@@ -7,6 +7,8 @@ import com.pojo.Collection;
 import com.pojo.Like;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,7 @@ public class CollectionService {
         return collectionDao.existsByCollectorAndBlogId(collection.getCollector(),collection.getBlogId());
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<Blog> findCollections(String username){
         List<Collection> collectionList=collectionDao.findAllByCollector(username);
         List<Long> blogIdList=collectionList.stream().map(Collection::getBlogId).collect(Collectors.toList());
@@ -47,6 +50,10 @@ public class CollectionService {
             blogList.add(collector);
         }
         return blogList;
+    }
+
+    public void deleteList(long blogId){
+        collectionDao.deleteAllByBlogId(blogId);
     }
 
 }

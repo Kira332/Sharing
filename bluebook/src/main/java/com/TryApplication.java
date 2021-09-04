@@ -19,4 +19,6 @@ public class TryApplication {
         SpringApplication.run(TryApplication.class, args);
     }
 
+    //config set stop-writes-on-bgsave-error no
+
 }

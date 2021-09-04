@@ -12,4 +12,5 @@ public interface LikeDao extends JpaRepository<Like,Long> {
     List<Like> findAllByUsernameAndIsRead(String username,int isRead);
     boolean existsByBlogIdAndLname(long blogId,String lname);
     Like findByBlogIdAndLname(long blogId,String lname);
+    void deleteAllByBlogId(long blogId);
 }

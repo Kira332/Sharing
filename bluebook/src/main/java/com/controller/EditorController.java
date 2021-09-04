@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.Dao.BlogDao;
 import com.pojo.Blog;
 import com.result.Result;
 import com.result.ResultFactory;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.sql.Blob;
 import java.util.List;
 
 @RestController
@@ -18,6 +20,8 @@ public class EditorController {
     @Autowired
     BlogService blogService;
 
+    @Autowired
+    BlogDao blogDao;
     //发布笔记
     @PostMapping("publishEditor")
     public Result publishEditor(@Valid Blog blogMessage) {
@@ -26,9 +30,11 @@ public class EditorController {
         if (id != null) {
             return ResultFactory.buildSuccessResult( "修改成功", blogService.save(blogMessage));
         }
+
         blogService.save(blogMessage);
         return ResultFactory.buildSuccessResult("",blogMessage);
     }
+
 
     @GetMapping("/getDraft")
     public Result getDraft(String username){

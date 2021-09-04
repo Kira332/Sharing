@@ -57,13 +57,6 @@ public class UserController {
     }
 
 
-    //我的评论
-    @GetMapping("getComment")
-    public Result getComment(String username){
-        List<Comment> commentList=userService.findComments(username);
-        return ResultFactory.buildSuccessResult(null,commentList);
-    }
-
     //新收的评论消息已读
     @GetMapping("clearComment")
     public Result clearComment(String username){
@@ -77,5 +70,7 @@ public class UserController {
         userService.clearLikes(username);
         return ResultFactory.buildSuccessResult();
     }
+
+
 
 }
